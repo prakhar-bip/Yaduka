@@ -1,0 +1,41 @@
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.env
+backend/.env
+
+# SQLite and databases
+*.db
+*.sqlite
+*.sqlite3
+yaduka.db
+backend/yaduka.db
+
+# Dependencies
+node_modules/
+.venv/
+venv/
+ENV/
+env/
+
+# Build artifacts
+dist/
+build/
+.cache/
+*.pyc
+__pycache__/
+backend/app/**/__pycache__/
+.pytest_cache/
+.ruff_cache/
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+
+# LocalStack and Docker data
+.localstack/
+data/
