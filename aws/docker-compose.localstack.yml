@@ -1,0 +1,50 @@
+version: '3.8'
+
+# =========================================================================
+# Track 1: "BUILD IT" — Zero-Cost Local AWS Emulation with LocalStack
+# Run complete AWS serverless stack (Lambda, API Gateway, DynamoDB, S3)
+# on your local machine with no AWS account, no card, and no bill.
+# =========================================================================
+
+services:
+  localstack:
+    container_name: yaduka_localstack
+    image: localstack/localstack:latest
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # External service ports
+    environment:
+      - SERVICES=lambda,apigateway,dynamodb,s3,cloudwatch,events
+      - DEBUG=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - AWS_DEFAULT_REGION=us-east-1
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./.localstack}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - yaduka_local_net
+
+  opensearch_local:
+    container_name: yaduka_opensearch
+    image: opensearchproject/opensearch:2.12.0
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - DISABLE_SECURITY_PLUGIN=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    networks:
+      - yaduka_local_net
+
+networks:
+  yaduka_local_net:
+    name: yaduka_local_net
