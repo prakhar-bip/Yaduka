@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="roseToUmber" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D6ADAD"/>
+      <stop offset="100%" stop-color="#5F4E4A"/>
+    </linearGradient>
+    <linearGradient id="umberToDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5F4E4A"/>
+      <stop offset="100%" stop-color="#382C29"/>
+    </linearGradient>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- LOGO ICON / EMBLEM -->
+  <g transform="translate(10, 10)">
+    <!-- Ambient Background Halo -->
+    <circle cx="50" cy="50" r="46" fill="#D6ADAD" fill-opacity="0.15"/>
+    <circle cx="50" cy="50" r="46" stroke="#D6ADAD" stroke-width="1.5" stroke-dasharray="4 4" stroke-opacity="0.6"/>
+
+    <!-- Upward Journey Summit Peaks / Outer Contour -->
+    <path d="M 22 72 L 50 26 L 78 72 Z" fill="none" stroke="#5F4E4A" stroke-width="2" stroke-opacity="0.3" stroke-linejoin="round"/>
+
+    <!-- Central 'Y' Ascending Expedition Path -->
+    <!-- Left path arm -->
+    <path d="M 32 30 C 38 42, 44 54, 50 62" stroke="#D6ADAD" stroke-width="5.5" stroke-linecap="round"/>
+    <!-- Right path arm -->
+    <path d="M 68 30 C 62 42, 56 54, 50 62" stroke="#5F4E4A" stroke-width="5.5" stroke-linecap="round"/>
+    <!-- Central Anchor Stem (Grounding) -->
+    <path d="M 50 62 L 50 86" stroke="#382C29" stroke-width="6" stroke-linecap="round"/>
+
+    <!-- Convergence Milestone Node (Happiness / Summit Beacon) -->
+    <circle cx="50" cy="62" r="5" fill="#FAF7F2" stroke="#5F4E4A" stroke-width="3"/>
+    
+    <!-- Rising Horizon Peak Star / Compass Guiding Light -->
+    <circle cx="50" cy="22" r="4" fill="#D6ADAD" filter="url(#softGlow)"/>
+    <path d="M 50 14 L 50 30 M 42 22 L 58 22" stroke="#D6ADAD" stroke-width="1.5" stroke-linecap="round"/>
+    
+    <!-- Elevation rings -->
+    <path d="M 36 78 Q 50 72 64 78" stroke="#D6ADAD" stroke-width="2" stroke-linecap="round" stroke-opacity="0.8"/>
+  </g>
+
+  <!-- TYPOGRAPHY / WORDMARK -->
+  <g transform="translate(130, 20)">
+    <!-- Brand Name 'Yaduka' -->
+    <text x="0" y="52" font-family="'Playfair Display', 'Cinzel', Georgia, serif" font-size="44" font-weight="700" fill="#382C29" letter-spacing="2">
+      YADUKA
+    </text>
+    
+    <!-- Accent Rose Dot -->
+    <circle cx="216" cy="42" r="5" fill="#D6ADAD"/>
+
+    <!-- Tagline & Narrative Descriptor -->
+    <text x="2" y="76" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="11.5" font-weight="600" fill="#5F4E4A" letter-spacing="4" text-transform="uppercase">
+      Strategic Growth Expedition
+    </text>
+
+    <!-- Subtle divider line -->
+    <line x1="2" y1="84" x2="250" y2="84" stroke="#D6ADAD" stroke-width="1.5" stroke-opacity="0.6"/>
+  </g>
+</svg>
