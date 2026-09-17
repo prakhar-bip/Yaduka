@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-umber: #5F4E4A;
+  --color-umber-dark: #382C29;
+  --color-umber-light: #7E6B66;
+  --color-rose: #D6ADAD;
+  --color-rose-light: #F8EFEB;
+  --color-rose-deep: #B58A8A;
+  --color-cream: #FAF7F2;
+  --color-bone: #F2ECE4;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF7F2;
+}
+::-webkit-scrollbar-thumb {
+  background: #D6ADAD;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #5F4E4A;
+}
+
+/* Animations */
+@keyframes radarSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.radar-sweep-beam {
+  transform-origin: 50% 50%;
+  animation: radarSweep 4s linear infinite;
+}
+
+@keyframes beaconPulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(214, 173, 173, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 16px rgba(214, 173, 173, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(214, 173, 173, 0);
+  }
+}
+
+.beacon-active {
+  animation: beaconPulse 2.8s infinite ease-in-out;
+}
+
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.float-slow {
+  animation: gentleFloat 5s ease-in-out infinite;
+}
+
+.float-delayed {
+  animation: gentleFloat 6s ease-in-out infinite 2s;
+}
+
+@keyframes dashTravel {
+  0% { stroke-dashoffset: 2000; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.animate-trail {
+  stroke-dasharray: 10 6;
+  animation: dashTravel 20s linear infinite;
+}
