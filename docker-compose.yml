@@ -1,0 +1,67 @@
+version: '3.8'
+
+# =========================================================================
+# Yaduka Platform — Root Compose Configuration
+# Complete multi-container orchestration for PostgreSQL, Backend, & Frontend
+# =========================================================================
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: yaduka_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-yaduka_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d yaduka_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - yaduka_net
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: yaduka_backend
+    restart: unless-stopped
+    environment:
+      APP_NAME: "Yaduka Strategic Growth Engine"
+      APP_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/yaduka_db
+      FALLBACK_SQLITE_URL: sqlite:///./yaduka.db
+      CORS_ORIGINS: "http://localhost:3000,http://127.0.0.1:3000,http://localhost:80"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - yaduka_net
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: yaduka_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - yaduka_net
+
+volumes:
+  pgdata:
+
+networks:
+  yaduka_net:
+    driver: bridge

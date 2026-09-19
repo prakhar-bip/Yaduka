@@ -1,0 +1,38 @@
+# ==========================================
+# Yaduka Backend Containerfile
+# Compatible with AWS Finch and Docker Desktop
+# ==========================================
+FROM python:3.11-slim AS builder
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install python dependencies
+COPY backend/requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# Final runtime image
+FROM python:3.11-slim AS runner
+
+WORKDIR /app
+
+# Create non-privileged user for security
+RUN groupadd -r yaduka && useradd -r -g yaduka -d /app yaduka
+
+COPY --from=builder /root/.local /root/.local
+ENV PATH=/root/.local/bin:$PATH
+
+COPY backend/app ./app
+COPY backend/run.py .
+
+EXPOSE 8000
+
+ENV APP_ENV=production
+ENV PYTHONUNBUFFERED=1
+
+CMD ["python", "run.py"]

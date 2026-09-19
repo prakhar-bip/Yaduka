@@ -1,0 +1,153 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Yaduka - Autonomous Strategic Growth Expedition & Market Reconnaissance Engine
+  Serverless Application Model (SAM) Specification for AWS Hackathon
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: python3.11
+    Environment:
+      Variables:
+        APP_NAME: "Yaduka Strategic Growth Engine"
+        STAGE: !Ref Stage
+        DYNAMODB_TABLE: !Ref YadukaSessionsTable
+        ARTIFACTS_BUCKET: !Ref YadukaArtifactsBucket
+
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+    Description: Deployment stage environment (dev, staging, prod)
+
+Resources:
+  # ==========================================
+  # HTTP API Gateway
+  # ==========================================
+  YadukaHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - "http://localhost:3000"
+          - "https://yaduka.vercel.app"
+        AllowMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+        AllowHeaders:
+          - Authorization
+          - Content-Type
+          - X-Requested-With
+
+  # ==========================================
+  # Lambda Functions (Track 1: LocalStack / Track 2: AWS Lambda)
+  # ==========================================
+  MarketReconnaissanceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend/
+      Handler: app.services.market_research.lambda_handler
+      Description: Autonomous market research scraper and niche discovery worker
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref YadukaSessionsTable
+        - S3CrudPolicy:
+            BucketName: !Ref YadukaArtifactsBucket
+      Events:
+        ReconTrigger:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YadukaHttpApi
+            Path: /api/reconnaissance/trigger
+            Method: post
+
+  StrategyWarRoomFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend/
+      Handler: app.services.analyzer.lambda_handler
+      Description: Interactive Strategy War Room multi-turn AI reasoning co-pilot
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref YadukaSessionsTable
+      Events:
+        WarRoomMessage:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YadukaHttpApi
+            Path: /api/strategy/dialogue
+            Method: post
+
+  MasterRoadmapFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend/
+      Handler: app.api.routes.strategy.lambda_handler
+      Description: 30-60-90 Day Master Execution Plan roadmap synthesizer
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref YadukaSessionsTable
+        - S3CrudPolicy:
+            BucketName: !Ref YadukaArtifactsBucket
+      Events:
+        FinalizeRoadmap:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YadukaHttpApi
+            Path: /api/strategy/finalize-plan
+            Method: post
+
+  # ==========================================
+  # Storage Layer (DynamoDB & S3)
+  # ==========================================
+  YadukaSessionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub yaduka-sessions-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: session_id
+          AttributeType: S
+        - AttributeName: business_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: session_id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: BusinessIndex
+          KeySchema:
+            - AttributeName: business_id
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      TimeToLiveSpecification:
+        AttributeName: expires_at
+        Enabled: true
+
+  YadukaArtifactsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub yaduka-artifacts-${Stage}-${AWS::AccountId}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+Outputs:
+  ApiEndpoint:
+    Description: HTTP API Gateway base endpoint URL
+    Value: !Sub "https://${YadukaHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+  SessionsTableName:
+    Description: DynamoDB Table Name for Active Sessions
+    Value: !Ref YadukaSessionsTable
+  ArtifactsBucketName:
+    Description: S3 Bucket Name for Generated Execution Plans
+    Value: !Ref YadukaArtifactsBucket
